@@ -17,6 +17,7 @@
   let scale = $state(1);
   let now = $state(new Date());
   let poll: ReturnType<typeof setInterval> | undefined;
+  let tick: ReturnType<typeof setInterval> | undefined;
 
   const applyNomieValues = (plugin: any) => {
     if (!plugin?.prefs) return;
@@ -30,13 +31,17 @@
     view = { name: 'edit', plan };
   };
 
-  // The widget shows the fast as it is saved, so it reads the storage again every 30 seconds
+  // The widget has two timers: the clock of the display, every second, and the saved fast, read again every 30 seconds
+  // (the modal may have started or ended it)
   const widgetClock = () => {
+    stopWidgetClock();
     now = new Date();
-    poll = setInterval(async () => {
-      await fasting.reload();
-      now = new Date();
-    }, 30_000);
+    tick = setInterval(() => (now = new Date()), 1000);
+    poll = setInterval(() => fasting.reload(), 30_000);
+  };
+  const stopWidgetClock = () => {
+    if (tick) clearInterval(tick);
+    if (poll) clearInterval(poll);
   };
 
   onMount(() => {
@@ -70,9 +75,7 @@
     });
   });
 
-  onDestroy(() => {
-    if (poll) clearInterval(poll);
-  });
+  onDestroy(stopWidgetClock);
 
   const widgetProgress = $derived(fasting.active ? progressOf(fasting.active, now) : null);
 </script>
