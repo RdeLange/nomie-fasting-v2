@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { fasting } from './fasting/state.svelte';
   import FastRing from './components/fast-ring.svelte';
+  import FastTimeline from './components/fast-timeline.svelte';
   import { hms, progressOf, type Plan } from './fasting/fasting';
   import { paletteFrom, type Palette } from './palette';
   import { onPrefsChange } from './prefs-live';
@@ -18,6 +19,9 @@
   let now = $state(new Date());
   let poll: ReturnType<typeof setInterval> | undefined;
   let tick: ReturnType<typeof setInterval> | undefined;
+  // the size of the widget: a narrow one shows the ring, a medium or large one the timeline
+  let frameWidth = $state(window.innerWidth);
+  const TIMELINE_FROM = 280;
 
   const applyNomieValues = (plugin: any) => {
     if (!plugin?.prefs) return;
@@ -66,8 +70,10 @@
       if (!fasting.loaded) await fasting.load(plugin);
       else await fasting.reload();
     });
+    window.addEventListener('resize', () => (frameWidth = window.innerWidth));
     plugin.onWidget(async () => {
       mode = 'widget';
+      frameWidth = window.innerWidth;
       applyNomieValues(plugin);
       if (!fasting.loaded) await fasting.load(plugin);
       else await fasting.reload();
@@ -84,6 +90,16 @@
   {#if mode === 'widget'}
     {#if !fasting.loaded}
       <p class="muted">Loading…</p>
+    {:else if widgetProgress && fasting.active && frameWidth >= TIMELINE_FROM}
+      <div class="head"><span aria-hidden="true">⏲</span><span>{fasting.active.name}</span></div>
+      <FastTimeline
+        percent={widgetProgress.percent}
+        color={fasting.active.color}
+        time={widgetProgress.done ? 'Target reached' : hms(widgetProgress.remainingMs)}
+        sub={widgetProgress.done ? `${fasting.active.hours} hours done` : 'to go'}
+        startsAt={new Date(fasting.active.startedAt)}
+        endsAt={widgetProgress.endsAt}
+      />
     {:else if widgetProgress && fasting.active}
       <div class="head"><span aria-hidden="true">⏲</span><span>{fasting.active.name}</span></div>
       <FastRing
