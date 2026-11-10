@@ -28,7 +28,7 @@
   /* the text follows the width of the ring, so a small ring keeps its time inside */
   .ring { container-type: inline-size; }
   .percent { margin: 0; font-size: calc(clamp(9px, 6cqw, 14px) * var(--scale)); font-weight: 600; color: var(--muted); }
-  .time { margin: 2px 0; font-size: calc(clamp(10px, 15cqw, 26px) * var(--scale)); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .time { margin: 2px 0; font-family: var(--ios-font-rounded); font-size: calc(clamp(10px, 15cqw, 26px) * var(--scale)); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .sub { margin: 0; font-size: calc(clamp(9px, 6.5cqw, 13px) * var(--scale)); color: var(--muted); }
   @media (prefers-reduced-motion: reduce) { .arc { transition: none; } }
 </style>

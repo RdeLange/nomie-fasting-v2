@@ -4,8 +4,9 @@
   import FastRing from './components/fast-ring.svelte';
   import FastTimeline from './components/fast-timeline.svelte';
   import { hms, progressOf, type Plan } from './fasting/fasting';
-  import { paletteFrom, type Palette } from './palette';
+  import { paletteFrom, glassFrom, tintTextFrom, type Palette, type Glass, dangerTextFrom } from './palette';
   import { onPrefsChange } from './prefs-live';
+  import { setLocale } from './locale.svelte';
   import Home from './screens/home.svelte';
   import Editor from './screens/editor.svelte';
   import Settings from './screens/settings.svelte';
@@ -15,6 +16,9 @@
   let view = $state<View>({ name: 'home' });
   let mode = $state<'modal' | 'widget'>('modal');
   let palette = $state<Palette>(paletteFrom(undefined));
+  let dangerText = $state(dangerTextFrom(undefined));
+  let glass = $state<Glass>(glassFrom(undefined));
+  let tintText = $state(tintTextFrom(undefined));
   let scale = $state(1);
   let now = $state(new Date());
   let poll: ReturnType<typeof setInterval> | undefined;
@@ -26,6 +30,10 @@
   const applyNomieValues = (plugin: any) => {
     if (!plugin?.prefs) return;
     palette = paletteFrom(plugin.prefs);
+    setLocale(plugin.prefs);
+    dangerText = dangerTextFrom(plugin.prefs);
+    glass = glassFrom(plugin.prefs);
+    tintText = tintTextFrom(plugin.prefs);
     scale = plugin.prefs.fontScale || 1;
   };
 
@@ -86,7 +94,7 @@
   const widgetProgress = $derived(fasting.active ? progressOf(fasting.active, now) : null);
 </script>
 
-<div class="root" class:widget={mode === 'widget'} style="--page: {palette.page}; --card: {palette.card}; --card-inner: {palette.cardInner}; --text: {palette.text}; --muted: {palette.textSecondary}; --line: {palette.separator}; --fill: {palette.fill}; --tint: {palette.tint}; --on-tint: {palette.onTint}; --tint-soft: {palette.tintSoft}; --good: {palette.good}; --danger: {palette.danger}; --scale: {scale};">
+<div class="root" class:widget={mode === 'widget'} style="--page: {palette.page}; --card: {palette.card}; --card-inner: {palette.cardInner}; --text: {palette.text}; --muted: {palette.textSecondary}; --line: {palette.separator}; --fill: {palette.fill}; --tint: {palette.tint}; --on-tint: {palette.onTint}; --tint-soft: {palette.tintSoft}; --good: {palette.good}; --danger: {dangerText}; --glass-fill: {glass.fill}; --glass-edge: {glass.edge}; --glass-blur: {glass.blur}; --glass-shadow: {glass.shadow}; --tint-text: {tintText}; --scale: {scale};">
   {#if mode === 'widget'}
     {#if !fasting.loaded}
       <p class="muted">Loading…</p>
@@ -134,7 +142,11 @@
   /* the widget card is the card colour of the app, and the ring sits on it */
   .root.widget { min-height: 0; height: 100vh; max-width: none; padding: 10px 12px; background: var(--card); font-size: calc(14px * var(--scale)); display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .root.widget p { text-align: center; margin: 4px 0; }
-  .top { display: flex; align-items: center; margin-bottom: 8px; }
+  /* the plugin page fills the frame, so the glass bar sits at the top edge */
+  /* the app's text: its iOS font stack (main.css --ios-font), with the app's smoothing */
+  :global(body) { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif; -webkit-font-smoothing: antialiased; --ios-font-rounded: ui-rounded, -apple-system, system-ui, sans-serif; }
+  /* the header is a Liquid Glass bar (D-glass): it stays at the top and the fasting content scrolls under it */
+  .top { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; margin: -16px -16px 8px; padding: 16px 16px 10px; background: var(--glass-fill); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border-bottom: 1px solid var(--glass-edge); }
   .title, .head { display: flex; align-items: center; gap: 8px; }
   .head { font-weight: 600; font-size: calc(14px * var(--scale)); color: var(--muted); }
   h1 { margin: 0; font-size: calc(22px * var(--scale)); font-weight: 700; }

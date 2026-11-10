@@ -2,7 +2,7 @@
   import { fasting } from '../fasting/state.svelte';
   import FastRing from '../components/fast-ring.svelte';
   import { hms, progressOf, thisWeek } from '../fasting/fasting';
-  import { shortDate } from '../format';
+  import { shortDate, dayAndTime } from '../locale.svelte';
 
   let { edit, create, back }: { edit: (id: string) => void; create: () => void; back: () => void } = $props();
 
@@ -16,7 +16,6 @@
   const progress = $derived(fasting.active ? progressOf(fasting.active, now) : null);
   const week = $derived(thisWeek(fasting.history, now));
   const recent = $derived(fasting.history.slice(0, 5));
-  const endsText = (d: Date) => d.toLocaleString(undefined, { weekday: 'short', hour: '2-digit', minute: '2-digit' });
 </script>
 
 {#if fasting.summary}
@@ -42,7 +41,7 @@
       time={progress.done ? 'Target reached' : hms(progress.remainingMs)}
       sub={progress.done ? `${fasting.active.hours} hours done` : 'to go'}
     />
-    <p class="muted centre-text">Started {shortDate(fasting.active.startedAt)} · ends {endsText(progress.endsAt)}</p>
+    <p class="muted centre-text">Started {shortDate(fasting.active.startedAt)} · ends {dayAndTime(progress.endsAt)}</p>
     <p class="muted centre-text small">Started later than that?</p>
     <div class="chips">
       <button onclick={() => fasting.moveStartBack(0.5)}>30 min earlier</button>
@@ -91,7 +90,7 @@
   h2 { margin: 16px 0 6px; font-size: calc(13px * var(--scale)); font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
   .card { padding: 14px 16px; border-radius: 16px; background: var(--card); margin: 10px 0; }
   .caption { margin: 0; font-size: calc(13px * var(--scale)); font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; text-align: center; }
-  .big { margin: 4px 0 0; font-size: calc(24px * var(--scale)); font-weight: 700; }
+  .big { margin: 4px 0 0; font-family: var(--ios-font-rounded); font-size: calc(24px * var(--scale)); font-weight: 700; }
   .muted { color: var(--muted); font-size: calc(14px * var(--scale)); margin: 4px 0; }
   .small { font-size: calc(13px * var(--scale)); }
   .centre-text { text-align: center; }
