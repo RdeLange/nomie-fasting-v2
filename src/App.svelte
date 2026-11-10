@@ -6,6 +6,7 @@
   import { hms, progressOf, type Plan } from './fasting/fasting';
   import { paletteFrom, glassFrom, tintTextFrom, type Palette, type Glass, dangerTextFrom } from './palette';
   import { onPrefsChange } from './prefs-live';
+  import { t, setLanguage } from './i18n/index.svelte';
   import { setLocale } from './locale.svelte';
   import Home from './screens/home.svelte';
   import Editor from './screens/editor.svelte';
@@ -30,6 +31,7 @@
   const applyNomieValues = (plugin: any) => {
     if (!plugin?.prefs) return;
     palette = paletteFrom(plugin.prefs);
+    setLanguage(plugin.prefs?.language);
     setLocale(plugin.prefs);
     dangerText = dangerTextFrom(plugin.prefs);
     glass = glassFrom(plugin.prefs);
@@ -97,7 +99,7 @@
 <div class="root" class:widget={mode === 'widget'} style="--page: {palette.page}; --card: {palette.card}; --card-inner: {palette.cardInner}; --text: {palette.text}; --muted: {palette.textSecondary}; --line: {palette.separator}; --fill: {palette.fill}; --tint: {palette.tint}; --on-tint: {palette.onTint}; --tint-soft: {palette.tintSoft}; --good: {palette.good}; --danger: {dangerText}; --glass-fill: {glass.fill}; --glass-edge: {glass.edge}; --glass-blur: {glass.blur}; --glass-shadow: {glass.shadow}; --tint-text: {tintText}; --scale: {scale};">
   {#if mode === 'widget'}
     {#if !fasting.loaded}
-      <p class="muted">Loading…</p>
+      <p class="muted">{t('loading')}</p>
     {:else if widgetProgress && fasting.active && frameWidth >= TIMELINE_FROM}
       <div class="head"><span aria-hidden="true">⏲</span><span>{fasting.active.name}</span></div>
       <FastTimeline
@@ -118,15 +120,15 @@
         sub={widgetProgress.done ? `${fasting.active.hours} hours done` : 'to go'}
       />
     {:else}
-      <div class="head"><span aria-hidden="true">⏲</span><span>No fast running</span></div>
-      <p class="muted">Start a fast in Nomie Fasting. Its progress shows here.</p>
+      <div class="head"><span aria-hidden="true">⏲</span><span>{t('noFast')}</span></div>
+      <p class="muted">{t('noFastHint')}</p>
     {/if}
   {:else}
     <header class="top">
       <div class="title"><span aria-hidden="true">⏲</span><h1>Nomie Fasting</h1></div>
     </header>
     {#if !fasting.loaded}
-      <p class="muted">Loading…</p>
+      <p class="muted">{t('loading')}</p>
     {:else if view.name === 'settings'}
       <Settings back={home} />
     {:else if view.name === 'edit'}

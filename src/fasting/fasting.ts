@@ -1,3 +1,4 @@
+import { t } from '../i18n/index.svelte';
 // The fasting: the plans, the timer of the fast that runs, its history, and the note when it ends.
 // Every time is a full timestamp (ISO), so the timer is right after a restart, a new day, or a time change in the device.
 
@@ -45,27 +46,30 @@ export const HISTORY_LIMIT = 200;
 export const MAX_HOURS = 72;
 export const MIN_HOURS = 1;
 
+// The English default of the note. A note still on this default is written in the current language (see fastNote).
+export const EN_LOG_ENTRY = 'Just finished <fast> fast after <duration> hours.';
+
 export const DEFAULT_SETTINGS: Settings = {
   timeTracker: null,
   moodTracker: null,
-  logEntry: 'Just finished <fast> fast after <duration> hours.',
+  logEntry: EN_LOG_ENTRY,
   askBeforeLog: true,
 };
 
-// The plans of the start: the five of v1
-export const TEMPLATE_PLANS: Array<Omit<Plan, 'id'>> = [
-  { name: 'Circadian rhythm', description: 'From sunset to morning, the rhythm of the body’s own clock.', hours: 13, color: '#C47ADA' },
-  { name: '16:8 intermittent', description: 'A 16 hour fast with an 8 hour window to eat.', hours: 16, color: '#90BAEE' },
-  { name: '18:6 intermittent', description: 'An 18 hour fast with a 6 hour window to eat.', hours: 18, color: '#75BAFA' },
-  { name: '20:4 intermittent', description: 'A 20 hour fast, with one meal a day.', hours: 20, color: '#FBE66E' },
-  { name: '36 hour fast', description: 'The monk fast. Many do it once a week at most.', hours: 36, color: '#F5B969' },
+// The plans of the start: the five of v1, in the current language when they are made
+export const templatePlans = (): Array<Omit<Plan, 'id'>> => [
+  { name: t('circadian'), description: t('circadianDesc'), hours: 13, color: '#C47ADA' },
+  { name: t('h16'), description: t('h16Desc'), hours: 16, color: '#90BAEE' },
+  { name: t('h18'), description: t('h18Desc'), hours: 18, color: '#75BAFA' },
+  { name: t('h20'), description: t('h20Desc'), hours: 20, color: '#FBE66E' },
+  { name: t('monk'), description: t('monkDesc'), hours: 36, color: '#F5B969' },
 ];
 
 const isColour = (value: unknown): value is string => typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value);
 
 export const planProblem = (p: Pick<Plan, 'name' | 'hours'>): string | null => {
-  if (!p.name.trim()) return 'Give the plan a name.';
-  if (!Number.isFinite(p.hours) || p.hours < MIN_HOURS || p.hours > MAX_HOURS) return `A fast is between ${MIN_HOURS} and ${MAX_HOURS} hours.`;
+  if (!p.name.trim()) return t('giveName');
+  if (!Number.isFinite(p.hours) || p.hours < MIN_HOURS || p.hours > MAX_HOURS) return t('hoursRange', { min: MIN_HOURS, max: MAX_HOURS });
   return null;
 };
 
@@ -80,7 +84,7 @@ export const normalisePlans = (saved: unknown): Plan[] => {
 export const normaliseActive = (saved: any): Active | null => {
   if (!saved || typeof saved.startedAt !== 'string' || isNaN(Date.parse(saved.startedAt))) return null;
   return {
-    name: String(saved.name ?? 'Fast'),
+    name: String(saved.name ?? t('defaultName')),
     description: String(saved.description ?? ''),
     hours: Number(saved.hours) || 16,
     color: isColour(saved.color) ? saved.color : '#C47ADA',
@@ -143,11 +147,12 @@ export const endFast = (active: Active, now: Date, mood?: number): Entry => {
 
 // The note of a finished fast, as v1 wrote it: the text, the trackers with their values
 export const fastNote = (settings: Settings, entry: Entry): string => {
-  const text = settings.logEntry.replace('<duration>', entry.hours.toFixed(2)).replace('<fast>', entry.name);
+  const template = settings.logEntry === EN_LOG_ENTRY ? t('logEntryDefault') : settings.logEntry;
+  const text = template.replace('<duration>', entry.hours.toFixed(2)).replace('<fast>', entry.name);
   const lines: string[] = [];
   if (settings.timeTracker) lines.push(`#${settings.timeTracker}(${hms(entry.hours * 3600_000)})`);
   if (settings.moodTracker && entry.mood !== undefined) lines.push(`#${settings.moodTracker}(${entry.mood})`);
-  return `Fast ⏲:\n${text}\n\n${lines.join('\n')}`;
+  return `${t('noteHead')}:\n${text}\n\n${lines.join('\n')}`;
 };
 
 // The fasts of the week of `now` (from Monday), that were completed, and the hours they took

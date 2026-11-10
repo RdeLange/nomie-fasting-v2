@@ -1,8 +1,9 @@
+import { t } from '../i18n/index.svelte';
 // The state of the plugin: the plans, the fast that runs, the history and the settings.
 // Everything is saved as it changes. The widget reads the same saved data, so it shows the fast the modal started.
 import {
   DEFAULT_SETTINGS, endFast, fastNote, normaliseActive, normaliseHistory, normalisePlans, normaliseSettings, planProblem, startedHoursAgo,
-  TEMPLATE_PLANS, HISTORY_LIMIT, type Active, type Entry, type Plan, type Settings,
+  templatePlans, HISTORY_LIMIT, type Active, type Entry, type Plan, type Settings,
 } from './fasting';
 
 class FastingState {
@@ -22,7 +23,7 @@ class FastingState {
     await this.reload();
     const stored = plugin.storage.getItem('plans');
     if (stored === undefined) {
-      this.plans = TEMPLATE_PLANS.map((t, i) => ({ ...t, id: `p${i + 1}` }));
+      this.plans = templatePlans().map((p, i) => ({ ...p, id: `p${i + 1}` }));
       this.save('plans', this.plans);
     }
     this.loaded = true;
@@ -54,7 +55,7 @@ class FastingState {
   }
 
   async deletePlan(id: string): Promise<boolean> {
-    const res = await this.plugin.confirm('Delete this plan?', 'The plan is removed. Your history is kept.');
+    const res = await this.plugin.confirm(t('deleteQ'), t('deleteBody'));
     if (!res?.value) return false;
     this.plans = this.plans.filter((p) => p.id !== id);
     this.save('plans', this.plans);
@@ -81,12 +82,12 @@ class FastingState {
     const now = new Date();
     const entry = endFast(this.active, now);
     if (!entry.completed) {
-      const res = await this.plugin.confirm('End the fast early?', `You are at ${entry.hours.toFixed(1)} of ${entry.target} hours. The fast is kept in your history as not completed.`);
+      const res = await this.plugin.confirm(t('endEarlyQ'), t('endEarlyBody', { done: entry.hours.toFixed(1), target: entry.target }));
       if (!res?.value) return;
     }
     let mood: number | undefined;
     if (this.settings.moodTracker) {
-      const res = await this.plugin.prompt('Mood', 'How was the mood during this fast? A number from 1 to 10');
+      const res = await this.plugin.prompt(t('moodQ'), t('moodBody'));
       const n = Math.round(Number(res?.value));
       if (n >= 1 && n <= 10) mood = n;
     }
@@ -117,7 +118,7 @@ class FastingState {
   }
 
   async clearHistory(): Promise<void> {
-    const res = await this.plugin.confirm('Clear the history?', 'The fasts you finished are removed from the plugin. Your timeline is not changed.');
+    const res = await this.plugin.confirm(t('clearQ'), t('clearBody'));
     if (!res?.value) return;
     this.history = [];
     this.save('history', []);

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from '../i18n/index.svelte';
   // The progress of a fast as a ring: the share of the target that has passed, and the time left in the middle.
   let { percent, color, label, time, sub }: { percent: number; color: string; label: string; time: string; sub: string } = $props();
 
@@ -6,7 +7,7 @@
   const C = 2 * Math.PI * R;
 </script>
 
-<div class="ring" role="img" aria-label="{label}: {percent} percent of the fast">
+<div class="ring" role="img" aria-label={t('ringLabel', { label, percent })}>
   <svg viewBox="0 0 120 120">
     <circle cx="60" cy="60" r={R} class="track" />
     <circle cx="60" cy="60" r={R} class="arc" stroke={color} stroke-linecap={percent > 0 ? "round" : "butt"} stroke-dasharray="{(Math.min(percent, 100) / 100) * C} {C}" />

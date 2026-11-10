@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from '../i18n/index.svelte';
   import { fasting } from '../fasting/state.svelte';
   import { MAX_HOURS, MIN_HOURS, type Plan } from '../fasting/fasting';
 
@@ -18,33 +19,33 @@
   };
 </script>
 
-<h2>{isNew ? 'New plan' : 'Edit plan'}</h2>
+<h2>{isNew ? t('newPlan') : t('editPlan')}</h2>
 
 <section class="card">
-  <label class="field"><span class="muted">Name</span><input class="input" bind:value={draft.name} placeholder="My fast" /></label>
-  <label class="field"><span class="muted">Description</span><textarea class="input" rows="2" bind:value={draft.description}></textarea></label>
+  <label class="field"><span class="muted">{t('name')}</span><input class="input" bind:value={draft.name} placeholder={t('namePlaceholder')} /></label>
+  <label class="field"><span class="muted">{t('description')}</span><textarea class="input" rows="2" bind:value={draft.description}></textarea></label>
   <div class="stepper">
-    <span>Hours</span>
+    <span>{t('hours')}</span>
     <div class="controls">
-      <button aria-label="Fewer hours" disabled={draft.hours <= MIN_HOURS} onclick={() => (draft.hours = Math.max(MIN_HOURS, draft.hours - 1))}>−</button>
+      <button aria-label={t('fewerHours')} disabled={draft.hours <= MIN_HOURS} onclick={() => (draft.hours = Math.max(MIN_HOURS, draft.hours - 1))}>−</button>
       <span class="count">{draft.hours}</span>
-      <button aria-label="More hours" disabled={draft.hours >= MAX_HOURS} onclick={() => (draft.hours = Math.min(MAX_HOURS, draft.hours + 1))}>+</button>
+      <button aria-label={t('moreHours')} disabled={draft.hours >= MAX_HOURS} onclick={() => (draft.hours = Math.min(MAX_HOURS, draft.hours + 1))}>+</button>
     </div>
   </div>
 </section>
 
-<h2>Colour</h2>
+<h2>{t('colour')}</h2>
 <section class="card swatches">
   {#each COLOURS as c (c)}
-    <button class="swatch" class:picked={draft.color === c} style="background: {c}" aria-label="Use this colour" onclick={() => (draft.color = c)}></button>
+    <button class="swatch" class:picked={draft.color === c} style="background: {c}" aria-label={t('useColour')} onclick={() => (draft.color = c)}></button>
   {/each}
 </section>
 
 {#if problem}<p class="problem">{problem}</p>{/if}
-<button class="primary" onclick={save}>Save</button>
+<button class="primary" onclick={save}>{t('save')}</button>
 <div class="row-buttons">
-  {#if !isNew}<button class="ghost danger" onclick={remove}>Delete</button>{/if}
-  <button class="ghost" onclick={done}>Cancel</button>
+  {#if !isNew}<button class="ghost danger" onclick={remove}>{t('delete')}</button>{/if}
+  <button class="ghost" onclick={done}>{t('cancel')}</button>
 </div>
 
 <style>

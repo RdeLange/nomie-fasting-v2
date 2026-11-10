@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from '../i18n/index.svelte';
   import { fasting } from '../fasting/state.svelte';
   import FastRing from '../components/fast-ring.svelte';
   import { hms, progressOf, thisWeek } from '../fasting/fasting';
@@ -20,17 +21,17 @@
 
 {#if fasting.summary}
   <section class="card done">
-    <p class="caption">{fasting.summary.completed ? 'Fast complete' : 'Fast ended early'}</p>
+    <p class="caption">{fasting.summary.completed ? t('fastComplete') : t('fastEndedEarly')}</p>
     <h2>{fasting.summary.name}</h2>
-    <p class="big">{fasting.summary.hours.toFixed(1)} of {fasting.summary.target} hours</p>
-    {#if fasting.summary.mood !== undefined}<p class="muted">Mood {fasting.summary.mood} of 10</p>{/if}
+    <p class="big">{t('ofHours', { done: fasting.summary.hours.toFixed(1), target: fasting.summary.target })}</p>
+    {#if fasting.summary.mood !== undefined}<p class="muted">{t('moodOf', { mood: fasting.summary.mood })}</p>{/if}
     {#if fasting.logged}
-      <p class="notice">Logged to your timeline.</p>
+      <p class="notice">{t('loggedToTimeline')}</p>
     {:else if fasting.settings.askBeforeLog}
-      <button class="primary" onclick={() => fasting.logSession()}>Log to timeline</button>
+      <button class="primary" onclick={() => fasting.logSession()}>{t('logToTimeline')}</button>
     {/if}
   </section>
-  <button class="ghost" onclick={() => fasting.dismissSummary()}>Done</button>
+  <button class="ghost" onclick={() => fasting.dismissSummary()}>{t('done')}</button>
 {:else if fasting.active && progress}
   <section class="card running" style="--accent: {fasting.active.color}">
     <p class="caption">{fasting.active.name}</p>
@@ -38,53 +39,53 @@
       percent={progress.percent}
       color={fasting.active.color}
       label={fasting.active.name}
-      time={progress.done ? 'Target reached' : hms(progress.remainingMs)}
-      sub={progress.done ? `${fasting.active.hours} hours done` : 'to go'}
+      time={progress.done ? t('targetReached') : hms(progress.remainingMs)}
+      sub={progress.done ? t('hoursDone', { hours: fasting.active.hours }) : t('toGo')}
     />
-    <p class="muted centre-text">Started {shortDate(fasting.active.startedAt)} · ends {dayAndTime(progress.endsAt)}</p>
-    <p class="muted centre-text small">Started later than that?</p>
+    <p class="muted centre-text">{t('startedEnds', { start: shortDate(fasting.active.startedAt), end: dayAndTime(progress.endsAt) })}</p>
+    <p class="muted centre-text small">{t('startedLater')}</p>
     <div class="chips">
-      <button onclick={() => fasting.moveStartBack(0.5)}>30 min earlier</button>
-      <button onclick={() => fasting.moveStartBack(1)}>1 h earlier</button>
-      <button onclick={() => fasting.moveStartBack(2)}>2 h earlier</button>
+      <button onclick={() => fasting.moveStartBack(0.5)}>{t('earlier30')}</button>
+      <button onclick={() => fasting.moveStartBack(1)}>{t('earlier1h')}</button>
+      <button onclick={() => fasting.moveStartBack(2)}>{t('earlier2h')}</button>
     </div>
-    <button class="primary" onclick={() => fasting.end()}>{progress.done ? 'End fast' : 'End fast now'}</button>
+    <button class="primary" onclick={() => fasting.end()}>{progress.done ? t('endFast') : t('endFastNow')}</button>
   </section>
 {:else}
-  <h2>Plans</h2>
+  <h2>{t('plans')}</h2>
   {#each fasting.plans as plan (plan.id)}
     <section class="card plan">
       <button class="plan-main" onclick={() => fasting.start(plan)}>
         <span class="dot" style="background: {plan.color}"></span>
-        <span class="text"><span class="title">{plan.name}</span><span class="muted">{plan.hours} hours{plan.description ? ` · ${plan.description}` : ''}</span></span>
-        <span class="start">Start</span>
+        <span class="text"><span class="title">{plan.name}</span><span class="muted">{t('hoursPlan', { hours: plan.hours })}{plan.description ? ` · ${plan.description}` : ''}</span></span>
+        <span class="start">{t('start')}</span>
       </button>
-      <button class="link" onclick={() => edit(plan.id)}>Edit</button>
+      <button class="link" onclick={() => edit(plan.id)}>{t('edit')}</button>
     </section>
   {:else}
-    <p class="muted pad">No plans yet. Make one with the hours you want to fast.</p>
+    <p class="muted pad">{t('noPlans')}</p>
   {/each}
-  <button class="ghost" onclick={create}>New plan</button>
+  <button class="ghost" onclick={create}>{t('newPlan')}</button>
 {/if}
 
 {#if !fasting.active && !fasting.summary}
-  <h2>This week</h2>
+  <h2>{t('thisWeek')}</h2>
   <section class="card">
-    <p class="big">{week.completed} <span class="muted">completed</span></p>
-    <p class="muted">{week.hours} hours fasted</p>
+    <p class="big">{week.completed} <span class="muted">{t('completed')}</span></p>
+    <p class="muted">{t('hoursFasted', { hours: week.hours })}</p>
   </section>
   {#if recent.length}
-    <h2>Recent</h2>
+    <h2>{t('recent')}</h2>
     <section class="card">
       {#each recent as e (e.at)}
-        <div class="row"><span>{shortDate(e.at)} · {e.name}</span><span class="muted">{e.hours.toFixed(1)} h{e.completed ? '' : ' · early'}</span></div>
+        <div class="row"><span>{shortDate(e.at)} · {e.name}</span><span class="muted">{t('hoursUnit', { hours: e.hours.toFixed(1) })}{e.completed ? '' : t('early')}</span></div>
       {/each}
     </section>
-    <button class="link" onclick={() => fasting.clearHistory()}>Clear the history</button>
+    <button class="link" onclick={() => fasting.clearHistory()}>{t('clearHistory')}</button>
   {/if}
 {/if}
 
-<button class="link" onclick={back}>Settings</button>
+<button class="link" onclick={back}>{t('settings')}</button>
 
 <style>
   h2 { margin: 16px 0 6px; font-size: calc(13px * var(--scale)); font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }

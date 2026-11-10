@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from '../i18n/index.svelte';
   import { fasting } from '../fasting/state.svelte';
   import type { Settings } from '../fasting/fasting';
 
@@ -13,33 +14,33 @@
 </script>
 
 <section class="card">
-  <p class="caption">Trackers</p>
-  <div class="row"><span>Fasting time</span><span class="muted">{fasting.settings.timeTracker ? `#${fasting.settings.timeTracker}` : 'None'}</span></div>
+  <p class="caption">{t('trackers')}</p>
+  <div class="row"><span>{t('fastingTime')}</span><span class="muted">{fasting.settings.timeTracker ? `#${fasting.settings.timeTracker}` : t('none')}</span></div>
   <div class="actions">
-    <button class="chip" onclick={() => pick('timeTracker')}>{fasting.settings.timeTracker ? 'Change' : 'Choose'}</button>
-    {#if fasting.settings.timeTracker}<button class="chip danger" onclick={() => update({ timeTracker: null })}>Remove</button>{/if}
+    <button class="chip" onclick={() => pick('timeTracker')}>{fasting.settings.timeTracker ? t('change') : t('choose')}</button>
+    {#if fasting.settings.timeTracker}<button class="chip danger" onclick={() => update({ timeTracker: null })}>{t('remove')}</button>{/if}
   </div>
-  <div class="row"><span>Mood (asked when a fast ends)</span><span class="muted">{fasting.settings.moodTracker ? `#${fasting.settings.moodTracker}` : 'None'}</span></div>
+  <div class="row"><span>{t('moodTracker')}</span><span class="muted">{fasting.settings.moodTracker ? `#${fasting.settings.moodTracker}` : t('none')}</span></div>
   <div class="actions">
-    <button class="chip" onclick={() => pick('moodTracker')}>{fasting.settings.moodTracker ? 'Change' : 'Choose'}</button>
-    {#if fasting.settings.moodTracker}<button class="chip danger" onclick={() => update({ moodTracker: null })}>Remove</button>{/if}
+    <button class="chip" onclick={() => pick('moodTracker')}>{fasting.settings.moodTracker ? t('change') : t('choose')}</button>
+    {#if fasting.settings.moodTracker}<button class="chip danger" onclick={() => update({ moodTracker: null })}>{t('remove')}</button>{/if}
   </div>
 </section>
 
 <section class="card">
-  <p class="caption">Timeline</p>
+  <p class="caption">{t('timeline')}</p>
   <label class="field">
-    <span class="muted">Text of the log</span>
+    <span class="muted">{t('logText')}</span>
     <textarea rows="3" value={fasting.settings.logEntry} oninput={(e) => update({ logEntry: e.currentTarget.value })}></textarea>
-    <span class="hint">&lt;fast&gt; is the plan, &lt;duration&gt; the hours that were fasted.</span>
+    <span class="hint">{t('logHint')}</span>
   </label>
   <div class="row">
-    <span>Ask before logging</span>
-    <button class="toggle" class:on={fasting.settings.askBeforeLog} aria-pressed={fasting.settings.askBeforeLog} aria-label="Ask before logging" onclick={() => update({ askBeforeLog: !fasting.settings.askBeforeLog })}></button>
+    <span>{t('askBeforeLog')}</span>
+    <button class="toggle" class:on={fasting.settings.askBeforeLog} aria-pressed={fasting.settings.askBeforeLog} aria-label={t('askBeforeLog')} onclick={() => update({ askBeforeLog: !fasting.settings.askBeforeLog })}></button>
   </div>
 </section>
 
-<button class="ghost" onclick={back}>Back</button>
+<button class="ghost" onclick={back}>{t('back')}</button>
 
 <style>
   .card { padding: 14px 16px; border-radius: 16px; background: var(--card); margin: 12px 0; }

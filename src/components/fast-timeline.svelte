@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { t } from '../i18n/index.svelte';
   // The progress of a fast along a timeline, for the medium and large widgets: a smooth bar that fills from the start
   // to the end, with a glowing head, quarter marks, and the start and end times at its ends.
   let {
@@ -15,7 +16,7 @@
   const marks = [25, 50, 75];
 </script>
 
-<div class="timeline" style="--accent: {color}" role="img" aria-label="{percent} percent of the fast">
+<div class="timeline" style="--accent: {color}" role="img" aria-label={t('timelineLabel', { percent })}>
   <div class="top">
     <p class="time">{time}</p>
     <p class="sub">{sub}</p>

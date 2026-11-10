@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_SETTINGS, endFast, fastNote, hms, normaliseActive, normaliseHistory, normalisePlans, planProblem, progressOf, startedHoursAgo, thisWeek, TEMPLATE_PLANS, type Active } from '../fasting/fasting';
+import { DEFAULT_SETTINGS, endFast, fastNote, hms, normaliseActive, normaliseHistory, normalisePlans, planProblem, progressOf, startedHoursAgo, thisWeek, templatePlans, type Active } from '../fasting/fasting';
 
 const now = new Date(2026, 9, 25, 12, 0, 0);
 const sixteen: Active = { name: '16:8', description: '', hours: 16, color: '#90BAEE', startedAt: startedHoursAgo(4, now) };
@@ -51,7 +51,7 @@ describe('ending a fast', () => {
 
 describe('plans and the saved data', () => {
   it('the five plans of v1 are there, and a plan needs a name and 1 to 72 hours', () => {
-    expect(TEMPLATE_PLANS.map((p) => p.hours)).toEqual([13, 16, 18, 20, 36]);
+    expect(templatePlans().map((p) => p.hours)).toEqual([13, 16, 18, 20, 36]);
     expect(planProblem({ name: ' ', hours: 16 })).toBeTruthy();
     expect(planProblem({ name: 'x', hours: 73 })).toBeTruthy();
     expect(planProblem({ name: 'x', hours: 16 })).toBeNull();
