@@ -139,7 +139,8 @@
   .root.widget { min-height: 0; height: 100vh; max-width: none; padding: 10px 12px; background: var(--card); font-size: calc(14px * var(--scale)); display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .root.widget p { text-align: center; margin: 4px 0; }
   /* the plugin page fills the frame, so the glass bar sits at the top edge */
-  :global(body) { margin: 0; }
+  /* the app's text: its iOS font stack (main.css --ios-font), with the app's smoothing */
+  :global(body) { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
   /* the header is a Liquid Glass bar (D-glass): it stays at the top and the fasting content scrolls under it */
   .top { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; margin: -16px -16px 8px; padding: 16px 16px 10px; background: var(--glass-fill); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border-bottom: 1px solid var(--glass-edge); }
   .title, .head { display: flex; align-items: center; gap: 8px; }
