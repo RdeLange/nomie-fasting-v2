@@ -10,7 +10,7 @@
     endsAt,
   }: { percent: number; color: string; time: string; sub: string; startsAt: Date; endsAt: Date } = $props();
 
-  const clock = (d: Date) => d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  import { clockTime as clock } from '../locale.svelte';
   const share = $derived(Math.max(0, Math.min(100, percent)));
   const marks = [25, 50, 75];
 </script>
@@ -41,7 +41,7 @@
 <style>
   .timeline { width: 100%; padding: 4px 2px 0; }
   .top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-  .time { margin: 0; font-size: calc(26px * var(--scale)); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .time { margin: 0; font-family: var(--ios-font-rounded); font-size: calc(26px * var(--scale)); font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
   .sub { margin: 0; font-size: calc(13px * var(--scale)); color: var(--muted); }
 
   .track {
